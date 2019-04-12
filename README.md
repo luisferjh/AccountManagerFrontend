@@ -1,4 +1,4 @@
-# vuewebpacksimple2
+# AccountManagerFrontEnd
 
 > template 2 webpack simple
 
