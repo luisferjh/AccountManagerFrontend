@@ -222,11 +222,6 @@
 			}
 		},  
 		computed : mapState(['searchString']),
-		// { 
-		// 	tolistSearch : function(){ 
-		// 		// console.log(this.$store.state.searchString)
-		// 	} 	
-		// },
 		watch:{
 			//esto se ejecuta por cada caracter ingresado
 			//y ejecutara la busqueda y buscara las coincidencias
@@ -256,10 +251,7 @@
 		created () {
 			this.listar();
 		},
-		methods:{		
-			trystore(){
-				console.log(this.$store.state.searchString)
-			},
+		methods:{				
 			//modal methods to open modal
 			showModalEdit(id) {
 				this.$refs['edit-modal'].show()
