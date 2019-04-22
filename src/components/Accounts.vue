@@ -1,5 +1,6 @@
 <template>   
     <div class="accountComponent">
+			
 			<b-row>
 				<!-- Reload all accounts-->
 				<b-button class="btn-style-user mr-4" variant="outline-secondary"	
@@ -201,10 +202,12 @@
 </template>
 
 <script>
-	import axios from 'axios'
 
+	import axios from 'axios'
+  import { mapState } from 'vuex';
+	
 	export default {   
-		props:['searchString'],     
+		// props:['searchString'],     
 		data(){
 			return {
 				accounts:[],				
@@ -214,31 +217,31 @@
 				user:'',
 				password:'', 
 				description:'',                                                 
-				email: '',   
+				email: '',   				
 				editedIndex: -1                                                                               
 			}
 		},  
-		computed : { 
-			tolistAgain : function(){ 
-				
-			} 	
-		},
+		computed : mapState(['searchString']),
+		// { 
+		// 	tolistSearch : function(){ 
+		// 		// console.log(this.$store.state.searchString)
+		// 	} 	
+		// },
 		watch:{
 			//esto se ejecuta por cada caracter ingresado
 			//y ejecutara la busqueda y buscara las coincidencias
 			//escritas en la barra de busqueda
 			searchString(newValue){
-				let me = this;
+				let me = this;				
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}
 				console.log(`${newValue}`)
 				//si esta la cadena de busqueda esta
 				//vacia, no ejecuta la peticion
 				if (newValue.length !== 0) {
-					axios.get('https://localhost:44329/api/Accounts/search/'+ newValue)
+					axios.get('https://localhost:44329/api/Accounts/search/'+ newValue,configuration)
 						.then(function(response){								
-							me.accounts = response.data								
-							// response.data.forEach(element => {
-							// 	console.log(element.webAccountName)						
-							// });
+							me.accounts = response.data													
 						}).catch(function(error){
 								console.log(`${error} no encontrado`);					
 						});
@@ -248,20 +251,15 @@
 					this.listar();
 				}		
 			}
-			// accounts:{
-				
-			// 	handler(values1,values2){
-			// 		console.log(values1)
-			// 		console.log(values2)    
-			// 	},
-			// 	deep:true,
-    	// }
-   
+
 		},    
 		created () {
 			this.listar();
 		},
 		methods:{		
+			trystore(){
+				console.log(this.$store.state.searchString)
+			},
 			//modal methods to open modal
 			showModalEdit(id) {
 				this.$refs['edit-modal'].show()
@@ -275,8 +273,10 @@
 			//HTTP Request methods 
 			listar:function(){
 				let me=this;
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}
 				// axios.get('https://pokeapi.co/api/v2/pokemon/1/')
-				axios.get('https://localhost:44329/api/accounts/MainData')
+				axios.get('https://localhost:44329/api/accounts/MainData', configuration)
 				// axios.get('/api/accounts/listar')
 					.then(function(response){
 						// console.log(response.data);
@@ -287,18 +287,24 @@
 			},
 			//show basc data accounts email and account
 			showAccountData:function(id,e){					
-				let me=this;												
-				axios.get('https://localhost:44329/api/accounts/show/'+id)
+				let me=this;						
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}											
+				axios.get('https://localhost:44329/api/accounts/show/'+id, configuration)
 				.then(function(response){								
 					me.accountsFull = response.data	
+				
+					
 					// console.log(me.accountsFull)					
 				}).catch(function(error){
 						console.log(error);
 				});
 			},
 				//Post Accounts
-			onSubmit:function(evt) {
+			onSubmit:function(evt) {			
 				let me = this;
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}									
 				evt.preventDefault()					
 				axios.post('https://localhost:44329/api/accounts/Create',{
 						"WebAccountName":this.nameWebAccount,
@@ -306,7 +312,7 @@
 						"Password":this.password,
 						"Description":this.description,
 						"Email":this.email
-				}).then(function(response){            												
+				}, configuration).then(function(response){            												
 						me.listar();
 				}).catch(function(error){
 						console.log(error);
@@ -318,7 +324,9 @@
 			},
 			//Update/Edit account
 			editAccount(){	
-					let me = this;									
+				let me = this;	
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}																	
 				axios.put('https://localhost:44329/api/accounts/update',{
 					"IdAccount":this.accountsFull.idAccount,
 					"WebAccountName":this.accountsFull.webAccountName,
@@ -326,7 +334,7 @@
 					"Password":this.accountsFull.password,
 					"Description":this.accountsFull.description,
 					"Email":this.accountsFull.email
-				}).then(function(response){            				
+				}, configuration).then(function(response){            				
 						me.listar();											
 				}).catch(function(error){
 					console.log(error);
@@ -336,7 +344,9 @@
 			},
 			deleteAccount(id){
 				let me = this; //hacemos esto para no perder la referencias del this dentro de las funciones de axios
-				axios.delete('https://localhost:44329/api/accounts/delete/'+id)
+				let header = {"Authorization" : "Bearer " + this.$store.state.token}
+				let configuration = {headers : header}									
+				axios.delete('https://localhost:44329/api/accounts/delete/'+id,configuration)
 				.then(function(response){													
 					console.log(response)		
 					me.listar();			
